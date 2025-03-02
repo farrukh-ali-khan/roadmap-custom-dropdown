@@ -1,5 +1,3 @@
-# README.md
-
 # Custom Dropdown Project
 
 A custom dropdown implementation using HTML, CSS, and JavaScript.
