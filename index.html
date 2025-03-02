@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGxpbmUgeDE9IjIiIHkxPSI0IiB4Mj0iMTQiIHkyPSI0Ii8+PGxpbmUgeDE9IjIiIHkxPSI4IiB4Mj0iMTQiIHkyPSI4Ii8+PGxpbmUgeDE9IjIiIHkxPSIxMiIgeDI9IjE0IiB5Mj0iMTIiLz48L3N2Zz4="
+    />
+
+    <title>Custom Responsive Dropdown</title>
+    <style>
+      /* 
+      ====================
+      Global & Responsive
+      ====================
+    */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      /* Make container fluid on small screens */
+      .dropdown {
+        position: relative;
+        max-width: 300px;
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      /*
+      Ensure the dropdown menu is at least as wide as the toggle button.
+    */
+      .dropdown-menu {
+        min-width: 100%;
+      }
+
+      /* 
+      ====================
+      Toggle Button Styles
+      ====================
+    */
+      .dropdown-toggle {
+        width: 100%;
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #fff;
+        cursor: pointer;
+        font-size: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .dropdown-toggle::after {
+        /* Simple arrow icon */
+        content: "▼";
+        font-size: 12px;
+        margin-left: 8px;
+      }
+      /* When dropdown is open, change arrow icon */
+      .dropdown.open .dropdown-toggle::after {
+        content: "▲";
+      }
+
+      /* 
+      ====================
+      Dropdown Menu Styles
+      ====================
+    */
+      .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #fff;
+        margin-top: 2px;
+        display: none; /* hidden by default */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+      }
+      .dropdown.open .dropdown-menu {
+        display: block; /* show menu when dropdown is open */
+      }
+
+      /* 
+      ====================
+      Dropdown Item Styles
+      ====================
+    */
+      .dropdown-item {
+        padding: 10px;
+        cursor: pointer;
+        font-size: 16px;
+        border-bottom: 1px solid #eee;
+        white-space: nowrap; /* Prevent text from wrapping to new line */
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .dropdown-item:last-child {
+        border-bottom: none;
+      }
+      .dropdown-item:hover {
+        background-color: #f2f2f2;
+      }
+
+      /* 
+      ====================
+      Selected Item Styles
+      ====================
+    */
+      .dropdown-item.selected::after {
+        content: "✔";
+        float: right;
+        color: green;
+        font-weight: bold;
+      }
+
+      /* 
+      ====================
+      Media Queries
+      ====================
+      Adjust font sizes and spacing for smaller screens without making text too small.
+    */
+      @media (max-width: 480px) {
+        .dropdown-toggle {
+          font-size: 16px; /* Keeping base size for readability */
+          padding: 10px;
+        }
+        .dropdown-item {
+          font-size: 16px; /* Keeping base size for readability */
+          padding: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 
+    ====================
+    HTML Markup
+    ====================
+  -->
+    <div class="dropdown" id="customDropdown">
+      <!-- 
+      Button that shows selected text or placeholder 
+    -->
+      <div class="dropdown-toggle" id="dropdownToggle">Select an Item</div>
+
+      <!-- 
+      Dropdown menu items 
+    -->
+      <div class="dropdown-menu" id="dropdownMenu">
+        <div class="dropdown-item" data-value="first">First Item</div>
+        <div class="dropdown-item" data-value="second">Second Item</div>
+        <div class="dropdown-item" data-value="third">Third Item</div>
+        <div class="dropdown-item" data-value="fourth">Fourth Item</div>
+        <div class="dropdown-item" data-value="fifth">Fifth Item</div>
+      </div>
+    </div>
+
+    <script>
+      //
+      // ====================
+      // JavaScript
+      // ====================
+      //
+
+      // Get DOM elements
+      const dropdown = document.getElementById("customDropdown");
+      const dropdownToggle = document.getElementById("dropdownToggle");
+      const dropdownMenu = document.getElementById("dropdownMenu");
+      const items = dropdownMenu.querySelectorAll(".dropdown-item");
+
+      // Track currently selected item
+      let selectedItem = null;
+
+      // Toggle the dropdown open/closed when clicking on the toggle button
+      dropdownToggle.addEventListener("click", function () {
+        dropdown.classList.toggle("open");
+      });
+
+      // For each dropdown item, attach a click event
+      items.forEach((item) => {
+        item.addEventListener("click", function () {
+          // Remove 'selected' class from all items
+          items.forEach((i) => i.classList.remove("selected"));
+
+          // Mark the clicked item as selected
+          this.classList.add("selected");
+          selectedItem = this;
+
+          // Update the toggle text to the selected item's text
+          dropdownToggle.textContent = this.textContent;
+
+          // Close the dropdown
+          dropdown.classList.remove("open");
+        });
+      });
+
+      // (Optional) Close dropdown if user clicks outside of it
+      document.addEventListener("click", function (e) {
+        if (!dropdown.contains(e.target)) {
+          dropdown.classList.remove("open");
+        }
+      });
+    </script>
+  </body>
+</html>
